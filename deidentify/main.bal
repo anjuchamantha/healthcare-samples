@@ -17,7 +17,7 @@ public isolated function removeDayFromDate(json value) returns json|fhirpath:Mod
         // Split the string using "-" delimiter with regexp
         regexp:RegExp|error regexResult = regexp:fromString("-");
         if regexResult is error {
-            return error("Error creating regex pattern.", value = value.toString());
+            return error fhirpath:ModificationFunctionError("Error creating regex pattern.", value = value.toString());
         }
         string[] parts = regexp:split(regexResult, value);
         if parts.length() == 3 {
@@ -26,7 +26,7 @@ public isolated function removeDayFromDate(json value) returns json|fhirpath:Mod
         }
         // If the date format is not as expected, return a shifted date or an error
         io:println("Invalid date format, returning a shifted date.");
-        return error("Invalid date format, returning a shifted date.", value = value.toString());
+        return error fhirpath:ModificationFunctionError("Invalid date format, returning a shifted date.", value = value.toString());
     }
     return value;
 }
@@ -63,11 +63,11 @@ public isolated function deIdentifyTextWithAI(json value) returns json|fhirpath:
     if value is string {
         string|error deIdentifiedText = deIdentifyTextWithDefaultModelProvider(value);
         if deIdentifiedText is error {
-            return error("Error during AI de-identification.", value = value.toString());
+            return error fhirpath:ModificationFunctionError("Error during AI de-identification.", value = value.toString());
         }
         return deIdentifiedText.toJson();
     }
-    return error("Value is not a string.", value = value.toString());
+    return error fhirpath:ModificationFunctionError("Value is not a string.", value = value.toString());
 }
 
 # Custom function to de-identify extensions based on their URL
