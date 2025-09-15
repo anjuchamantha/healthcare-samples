@@ -70,6 +70,19 @@ public isolated function deIdentifyTextWithAI(json value) returns json|fhirpath:
     return error("Value is not a string.", value = value.toString());
 }
 
+# Custom function to de-identify extensions based on their URL
+#
+# + value - The original extension value
+# + return - The modified extension value
+public isolated function deIdentifyExtension(json value) returns json|fhirpath:ModificationFunctionError {
+    // Example: Check for a specific extension URL and modify its value
+    if value is map<json> && value["url"] == "http://example.org/fhir/StructureDefinition/employer" {
+        value["valueString"] = "**REDACTED**";
+        return value;
+    }
+    return value;
+}
+
 # Function to call an AI model for de-identification.
 # Need to configure WSO2 Provider in Config.toml under [ballerina.ai.wso2ProviderConfig] to work.
 # Shortcut command to configure default model provider in VS Code: @command:ballerina.configureWso2DefaultModelProvider,
@@ -88,6 +101,7 @@ public isolated function deIdentifyTextWithDefaultModelProvider(string text) ret
     return deIdentifiedText;
 }
 
+
 public function main() {
 
     // Using Custom Functions for de-identification
@@ -96,6 +110,7 @@ public function main() {
     map<fhirpath:ModificationFunction> customOperations = {
         "removeDay": removeDayFromDate,
         "partialMask": maskPartially,
+        "deIdentifyExtension": deIdentifyExtension,
         "aiDeIdentify": deIdentifyTextWithAI
     };
 
@@ -108,7 +123,7 @@ public function main() {
         },
         // Remove elements which are not needed
         {
-            "fhirPaths": ["Patient.identifier", "Patient.name", "Patient.photo", "Patient.contact", "Patient.link", "Patient.extension[1]"],
+            "fhirPaths": ["Patient.identifier", "Patient.name", "Patient.photo", "Patient.contact", "Patient.link"],
             "operation": "redact"
         },
         // De-identify address
@@ -140,6 +155,11 @@ public function main() {
         {
             "fhirPaths": ["Patient.generalPractitioner.display", "Patient.managingOrganization.display", "Patient.link.other.display"],
             "operation": "mask"
+        },
+        // De-identify extensions based on their URL
+        {
+            "fhirPaths": ["Patient.extension[1]"],
+            "operation": "deIdentifyExtension"
         },
         // De-identify text fields using an AI model. Please review the results for accuracy.
         {

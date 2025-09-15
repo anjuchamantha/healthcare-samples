@@ -55,19 +55,7 @@ cp sample_Config.toml Config.toml
 
 This will copy the sample configuration which contains example de-identification rules that you can customize for your needs.
 
-### 2. Define De-identification Rules
-
-You can define de-identification rules in two ways:
-
-#### Option A: Configuration-Based Rules (Config.toml)
-
-Create your `Config.toml` from the sample and customize the de-identification rules:
-
-```bash
-cp sample_Config.toml Config.toml
-```
-
-Then edit `Config.toml` to define your de-identification rules. The sample configuration includes comprehensive examples:
+Also it contain the the deidentify package realted configurations such as keys and other options as follows:
 
 ```toml
 [ballerinax.health.fhir.r4utils.deidentify]
@@ -76,7 +64,19 @@ encryptKey = "your-secure-encrypt-key"
 skipOnError = false
 inputFHIRResourceValidation = false
 outputFHIRResourceValidation = false
+```
 
+Check the [Security Keys](#3-security-keys) section for more details on setting up secure keys.
+
+### 2. Define De-identification Rules
+
+You can define de-identification rules in two ways: Configuration-based or programmatic.
+
+#### Option A: Configuration-Based Rules (Config.toml)
+
+Add the de-identification rules in `Config.toml`. Examples:
+
+```toml
 # Patient ID is encrypted so that it can be re-identified later if needed
 [[ballerinax.health.fhir.r4utils.deidentify.rules]]
 fhirPaths = ["Patient.id"]
@@ -120,11 +120,19 @@ deidentify:DeIdentifyRule[] rules = [
 json|deidentify:DeIdentificationError result = deidentify:deIdentify(patient, deIdentifyRules = rules);
 ```
 
+When to use each approach is discussed in [Choosing Your Approach](#4-choosing-your-approach) section.
+
+Note: If you have provided any programmatic rules, they will take precedence over configuration-based rules.
+
 ### 3. Security Keys
 
-⚠️ **Important**: Update the cryptographic keys in your configuration:
+⚠️ **Important**: 
+
+You need to change the cryptographic keys in your configuration:
 - `cryptoHashKey`: Used for hashing operations (minimum 16 characters)
 - `encryptKey`: Used for encryption operations (minimum 16 characters)
+
+Without adding keys in plain text in the configuration, you can also provide them securely using environment variables or command-line arguments. Refer to the [Provide values to configurable variables](https://ballerina.io/learn/provide-values-to-configurable-variables/) documentation for more details.
 
 ## Usage
 
@@ -301,7 +309,7 @@ accessToken = "<ACCESS_TOKEN>"
 
 OR you can use a shortcut command to configure default model provider in VS Code: `@command:ballerina.configureWso2DefaultModelProvider`, which will add the  configuration with serviceUrl and accessToken. The Wso2DefaultModelProvider is only for testing and evaluation purposes. For production use, you should set up your own AI model provider.
 
-If you want to use a different AI model provider, you can implement your own custom function that calls the desired AI service and register it similarly to the other custom functions. For more ballerina AI capabilities, refer to the [Ballerina AI usecases](https://ballerina.io/use-cases/ai/).
+If you want to use a different AI model provider, you can implement a custom function that calls the desired AI service and register it just like the other custom functions. For more details on AI capabilities in Ballerina, see the [Ballerina AI use cases](https://ballerina.io/use-cases/ai/)
 
 ⚠️ Note: AI-based de-identification is non-deterministic and may not be accurate. Please review the results manually.
 

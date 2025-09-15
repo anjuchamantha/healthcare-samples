@@ -33,7 +33,7 @@ operation = "hash"
 # Mask phone numbers partially, so that the value is still recognizable as a phone number with the number format preserved, but not identifiable
 [[ballerinax.health.fhir.r4utils.deidentify.rules]]
 fhirPaths = ["Patient.telecom.value"]
-operation = "hapartialMasksh"
+operation = "partialMask"
 
 # The birth date is important for age calculations, so we keep the year and month, but remove the day to reduce identifiability
 [[ballerinax.health.fhir.r4utils.deidentify.rules]]
@@ -49,6 +49,11 @@ operation = "encrypt"
 [[ballerinax.health.fhir.r4utils.deidentify.rules]]
 fhirPaths = ["Patient.generalPractitioner.display", "Patient.managingOrganization.display", "Patient.link.other.display"]
 operation = "mask"
+
+# De-identify extensions based on their URL
+[[ballerinax.health.fhir.r4utils.deidentify.rules]]
+fhirPaths = ["Patient.extension[1]"]
+operation = "deIdentifyExtension"
 
 # De-identify text fields using an AI model. Need a correct access token under [ballerina.ai.wso2ProviderConfig] to work
 [[ballerinax.health.fhir.r4utils.deidentify.rules]]
