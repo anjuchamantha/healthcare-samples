@@ -3,7 +3,6 @@ import ballerina/io;
 import ballerina/lang.regexp;
 import ballerina/log;
 import ballerinax/health.fhir.r4utils.deidentify;
-import ballerinax/health.fhir.r4utils.fhirpath;
 
 // Creating Custom De-identification Functions
 
@@ -11,13 +10,13 @@ import ballerinax/health.fhir.r4utils.fhirpath;
 #
 # + value - The original date value
 # + return - The modified date value without the day
-public isolated function removeDayFromDate(json value) returns json|fhirpath:ModificationFunctionError {
+public isolated function removeDayFromDate(json value) returns json|error {
     if value is string {
         // Assuming the date is in the format "YYYY-MM-DD"
         // Split the string using "-" delimiter with regexp
         regexp:RegExp|error regexResult = regexp:fromString("-");
         if regexResult is error {
-            return error fhirpath:ModificationFunctionError("Error creating regex pattern.", value = value.toString());
+            return error ("Error creating regex pattern.", value = value.toString());
         }
         string[] parts = regexp:split(regexResult, value);
         if parts.length() == 3 {
@@ -26,7 +25,7 @@ public isolated function removeDayFromDate(json value) returns json|fhirpath:Mod
         }
         // If the date format is not as expected, return a shifted date or an error
         io:println("Invalid date format, returning a shifted date.");
-        return error fhirpath:ModificationFunctionError("Invalid date format, returning a shifted date.", value = value.toString());
+        return error ("Invalid date format, returning a shifted date.", value = value.toString());
     }
     return value;
 }
@@ -35,7 +34,7 @@ public isolated function removeDayFromDate(json value) returns json|fhirpath:Mod
 #
 # + value - The original value to be masked
 # + return - The masked value
-public isolated function maskPartially(json value) returns json|fhirpath:ModificationFunctionError {
+public isolated function maskPartially(json value) returns json|error {
     if value is string {
         // Mask end of the string with the length preserved
         int length = value.length();
@@ -59,22 +58,22 @@ public isolated function maskPartially(json value) returns json|fhirpath:Modific
 #
 # + value - The original text value
 # + return - The modified text value
-public isolated function deIdentifyTextWithAI(json value) returns json|fhirpath:ModificationFunctionError {
+public isolated function deIdentifyTextWithAI(json value) returns json|error {
     if value is string {
         string|error deIdentifiedText = deIdentifyTextWithDefaultModelProvider(value);
         if deIdentifiedText is error {
-            return error fhirpath:ModificationFunctionError("Error during AI de-identification.", value = value.toString());
+            return error ("Error during AI de-identification.", value = value.toString());
         }
         return deIdentifiedText.toJson();
     }
-    return error fhirpath:ModificationFunctionError("Value is not a string.", value = value.toString());
+    return error ("Value is not a string.", value = value.toString());
 }
 
 # Custom function to de-identify extensions based on their URL
 #
 # + value - The original extension value
 # + return - The modified extension value
-public isolated function deIdentifyExtension(json value) returns json|fhirpath:ModificationFunctionError {
+public isolated function deIdentifyExtension(json value) returns json|error {
     // Example: Check for a specific extension URL and modify its value
     if value is map<json> && value["url"] == "http://example.org/fhir/StructureDefinition/employer" {
         value["valueString"] = "**REDACTED**";
@@ -107,7 +106,7 @@ public function main() {
     // Using Custom Functions for de-identification
 
     // Create a map of custom operations
-    map<fhirpath:ModificationFunction> customOperations = {
+    map<deidentify:DeIdentificationFunction> customOperations = {
         "removeDay": removeDayFromDate,
         "partialMask": maskPartially,
         "deIdentifyExtension": deIdentifyExtension,

@@ -23,13 +23,6 @@ The FHIR de-identification utility provides comprehensive data protection capabi
 
 - **Ballerina**: Version 2201.12.3 or later
 
-## Package Dependencies
-
-This sample uses the following Ballerina packages:
-
-- [`ballerinax/health.fhir.r4utils.deidentify`](https://central.ballerina.io/ballerinax/health.fhir.r4utils.deidentify) - Core de-identification utilities
-- [`ballerinax/health.fhir.r4utils.fhirpath`](https://central.ballerina.io/ballerinax/health.fhir.r4utils.fhirpath) - FHIRPath evaluation support
-
 ## Installation
 
 1. **Clone the repository**:
@@ -208,7 +201,7 @@ You can create and register custom de-identification functions for both approach
 
 ```ballerina
 # Custom function to remove the day from a date
-public isolated function removeDayFromDate(json value) returns json|fhirpath:ModificationFunctionError {
+public isolated function removeDayFromDate(json value) returns json|error {
     if value is string {
         regexp:RegExp|error regexResult = regexp:fromString("-");
         if regexResult is error {
@@ -225,7 +218,7 @@ public isolated function removeDayFromDate(json value) returns json|fhirpath:Mod
 }
 
 # Custom partial masking function
-public isolated function maskPartially(json value) returns json|fhirpath:ModificationFunctionError {
+public isolated function maskPartially(json value) returns json|error {
     if value is string {
         int length = value.length();
         if length > 4 {
@@ -248,7 +241,7 @@ public isolated function maskPartially(json value) returns json|fhirpath:Modific
 Create a map of custom operations
 
 ```ballerina
-map<fhirpath:ModificationFunction> customOperations = {
+map<deidentify:DeIdentificationFunction> customOperations = {
     "removeDay": removeDayFromDate,
     "partialMask": maskPartially
 };
