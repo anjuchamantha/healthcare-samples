@@ -326,7 +326,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "task"
-version = "2.11.0"
+version = "2.10.0"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "time"},
@@ -473,7 +473,7 @@ dependencies = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4utils.deidentify"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
 	{org = "ballerina", name = "crypto"},
 	{org = "ballerina", name = "log"},
@@ -486,7 +486,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "health.fhir.r4utils.fhirpath"
-version = "3.0.0"
+version = "3.1.0"
 dependencies = [
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "lang.int"},
@@ -495,21 +495,17 @@ dependencies = [
 	{org = "ballerinax", name = "health.fhir.r4"},
 	{org = "ballerinax", name = "health.fhir.r4.validator"}
 ]
-modules = [
-	{org = "ballerinax", packageName = "health.fhir.r4utils.fhirpath", moduleName = "health.fhir.r4utils.fhirpath"}
-]
 
 [[package]]
 org = "healthcare_samples"
 name = "deidentify"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
 	{org = "ballerina", name = "ai"},
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "lang.regexp"},
 	{org = "ballerina", name = "log"},
-	{org = "ballerinax", name = "health.fhir.r4utils.deidentify"},
-	{org = "ballerinax", name = "health.fhir.r4utils.fhirpath"}
+	{org = "ballerinax", name = "health.fhir.r4utils.deidentify"}
 ]
 modules = [
 	{org = "healthcare_samples", packageName = "deidentify", moduleName = "deidentify"}
